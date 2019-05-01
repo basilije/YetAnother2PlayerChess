@@ -8,9 +8,6 @@
 #include <fstream>
 #include <ctime>
 
-// declarations needed
-//bool checkOnePossibleMove(int x1, int y1, int x2, int y2);
-
 
 enum FigureType { KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN, NO_FIGURE };
 enum FigureColor { WHITE, BLACK, NO_COLOR };
@@ -80,8 +77,6 @@ void switchColorToPlay()
 {
 	(color_to_play == BLACK) ? color_to_play = WHITE : color_to_play = BLACK;
 }
-
-
 
 
 void initChessBoard()
@@ -157,8 +152,6 @@ void initConsole()
 	wcscpy_s(cfi.FaceName, L"MS Gothic");  // set Font
 
 
-
-
 	SetCurrentConsoleFontEx(stdOutputHandle, FALSE, &cfi);
 	SetConsoleTextAttribute(stdOutputHandle, BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED); //FOREGROUND_RED | FOREGROUND_BLUE | 
 	SetConsoleOutputCP(CP_UTF8);
@@ -226,7 +219,6 @@ void beepNReloadTheScreen()
 {
 	cout << "\a";
 	printChessBoard();
-	//sevenNationsArmy();
 }
 
 
@@ -239,6 +231,7 @@ bool makeMoveByChessBoardSquares(ChessBoardSquare* from_square, ChessBoardSquare
 	from_square->figure_type = NO_FIGURE;
 	return true;
 }
+
 
 bool makeKingsMove(int from_x, int from_y, int to_x, int to_y)
 {
@@ -257,56 +250,7 @@ bool makeKingsMove(int from_x, int from_y, int to_x, int to_y)
 
 	return move_successfull;
 }
-/*
-bool makeKingsMove(int from_x, int from_y, int to_x, int to_y)
-{
-	bool invalid_move = false;
-	bool move_successfull = false;
-	ChessBoardSquare* from_square = &chessboard_squares[from_x][from_y];
-	ChessBoardSquare* to_square = &chessboard_squares[to_x][to_y];
-	int x_increment;
-	int y_increment;
 
-	// moving horizontal for 1
-	if ((from_x == to_x) && (abs(to_y - from_y) == 1))  
-	{ 
-			y_increment = to_y - from_y;
-			for (int i = from_y + y_increment; i != to_y; i += y_increment)
-				if (chessboard_squares[to_x][i].figure_color != NO_COLOR)
-					invalid_move = true;
-	}
-	
-	// moving vertical for 1
-	if ((from_y == to_y) && (abs(to_x - from_x) == 1)) 
-	{
-		x_increment = to_x - from_x;
-		for (int i = from_x + x_increment; i != to_x; i += x_increment)
-			if (chessboard_squares[i][to_y].figure_color != NO_COLOR)
-				invalid_move = true;
-	}
-
-	// moving diagonal for 1
-	if (abs(from_x - to_x) == abs(from_y - to_y) && abs(from_x - to_x)==1)
-	{
-		x_increment = (to_x - from_x) / (abs(to_x - from_x));
-		y_increment = (to_y - from_y) / (abs(to_y - from_y));
-
-		for (int i = 1; i < abs(from_x - to_x); i++)
-			if (chessboard_squares[from_x + x_increment * i][from_y + y_increment * i].figure_color != NO_COLOR)
-				invalid_move = true;
-	}
-	//else
-	//	invalid_move = true;
-
-	//if (abs(to_x - from_x) == 1 && (abs(from_y - to_y) == 1))
-	//	invalid_move = false;
-
-	if (!invalid_move)
-		move_successfull = makeMoveByChessBoardSquares(from_square, to_square);
-
-	return move_successfull;
-}
-*/
 
 bool makeQueensMove(int from_x, int from_y, int to_x, int to_y)
 {
@@ -457,7 +401,6 @@ bool makePawnsMove(int from_x, int from_y, int to_x, int to_y)
 }
 
 
-
 bool makeMoveByCoordinates(int from_x, int from_y, int to_x, int to_y)
 {
 	ChessBoardSquare* from_square = &chessboard_squares[from_x][from_y];
@@ -521,12 +464,7 @@ bool checkOnePossibleMove(int x1, int y1, int x2, int y2)
 	bool possible_move = false;
 	memcpy(temp_chessboard_squares, chessboard_squares, sizeof(chessboard_squares));
 	possible_move = makeMoveByCoordinates(x1, y1, x2, y2);
-	//checkChess(color_to_play);
 	memcpy(chessboard_squares, temp_chessboard_squares, sizeof(chessboard_squares));
-	//if ((!black_in_check && color_to_play == WHITE) || (!white_in_check && color_to_play == BLACK))
-	//	return possible_move;
-	//else
-	//	return false;
 	return possible_move;
 }
 
@@ -644,6 +582,7 @@ void appendTheLog(string log_game_path, string key_sequence)
 	myfile.close();
 }
 
+
 int countAllPossibleMoves()
 {
 	int no_of_moves = 0;
@@ -657,52 +596,6 @@ int countAllPossibleMoves()
 
 	return no_of_moves;
 }
-
-
-/*
-int countAllPossibleMoves()
-{
-	int no_of_moves = 0;
-	checkChess(color_to_play);
-	for (int x1 = 0; x1 < 8; x1++)
-		for (int y1 = 0; y1 < 8; y1++)
-			for (int x2 = 0; x2 < 8; x2++)
-				for (int y2 = 0; y2 < 8; y2++)
-					if (checkOnePossibleMove(x1, y1, x2, y2))
-					{
-						bool white_count_in_check = false;
-						bool black_count_in_check = false;
-						int x = -1;
-						int y = -1;
-
-						// let's find where is the king
-						for (int x1 = 0; x1 < 8; x1++)
-							for (int y1 = 0; y1 < 8; y1++)
-								if (((&chessboard_squares[x1][y1])->figure_type == KING) && ((&chessboard_squares[x1][y1])->figure_color == color_to_play))
-								{
-									x = x1;
-									y = y1;
-								}
-
-						// switch the color
-						switchColorToPlay();
-
-						// try to go with other color to the king's position
-						for (int x1 = 0; x1 < 8; x1++)
-							for (int y1 = 0; y1 < 8; y1++)
-								if (checkOnePossibleMove(x1, y1, x, y)) // if it is possible set the appropriate bool to true
-									(color_to_play == BLACK) ? white_count_in_check = true : black_count_in_check = true;
-
-						// switch the color back
-						switchColorToPlay();
-
-						if (((color_to_play == WHITE) && (!white_count_in_check)) || ((color_to_play == BLACK) && (!black_count_in_check)))
-							no_of_moves++;
-					}
-
-	return no_of_moves;
-}
-*/
 
 
 void checkAllPossibleMoves(string log_game_path = "")
@@ -721,7 +614,6 @@ void checkAllPossibleMoves(string log_game_path = "")
 						appendTheLog(log_game_path, row0 + row1 + to_string(y1 + 1) + row2 + to_string(y2 + 1));
 					}
 }
-
 
 
 void checkChess(FigureColor color)
@@ -752,6 +644,7 @@ void checkChess(FigureColor color)
 	// switch the color back
 	switchColorToPlay();
 }
+
 
 void infoScreen()
 {
@@ -922,8 +815,6 @@ bool playOneMove(string save_game_path, string log_game_path)
 }
 
 
-
-
 void introScreen()
 {
 	COORD randomCoords;
@@ -931,7 +822,7 @@ void introScreen()
 	{
 		SetConsoleCursorPosition(stdOutputHandle, homeCoords);
 		cout << endl << "･･･Yet･･Another･･･" << endl << endl << "･･2･PLAYER･CHESS･･" << endl << endl << "･･F6-･quick･save･･" << endl << "･･F7-･quick･load･･" << endl << "･･･I-･info screen･" << endl << endl << "･･press･･any･key･･";
-		//Beep(rand() % 500 + 500, rand() % 750);
+		Beep(rand() % 500 + 500, rand() % 750);
 		randomCoords = { (rand() % 9) * 2, rand() % 10 };
 		SetConsoleCursorPosition(stdOutputHandle, randomCoords);
 		cout << "☺";
@@ -940,7 +831,6 @@ void introScreen()
 		cout << "☻";
 	} while (!_kbhit());
 }
-
 
 
 void playChess()
