@@ -11,7 +11,6 @@
 
 enum FigureType { KING, QUEEN, BISHOP, KNIGHT, ROOK, PAWN, NO_FIGURE };
 enum FigureColor { WHITE, BLACK, NO_COLOR };
-void checkChess(FigureColor color);
 
 struct ChessBoardSquare
 {
@@ -46,7 +45,7 @@ HANDLE stdOutputHandle;
 
 using namespace std;
 
-
+// where is the builded exe
 const string ExePath() {
 	char buffer[MAX_PATH];
 	GetModuleFileName(NULL, buffer, MAX_PATH);
@@ -54,7 +53,7 @@ const string ExePath() {
 	return string(buffer).substr(0, pos);
 }
 
-
+// function for appending paths
 string pathAppend(const string& p1, const string& p2) {
 
 	char sep = '/';
@@ -72,13 +71,13 @@ string pathAppend(const string& p1, const string& p2) {
 		return(p1 + p2);
 }
 
-
+// function that inverse the current playing color (black-to-white-to-black-to...)
 void switchColorToPlay()
 {
 	(color_to_play == BLACK) ? color_to_play = WHITE : color_to_play = BLACK;
 }
 
-
+// function that make an initial order of figures
 void initChessBoard()
 {
 	for (int x = 0; x < 8; x++)
@@ -97,7 +96,7 @@ void initChessBoard()
 	}
 }
 
-
+// clear the screen and set the cursor to {0,0} position
 void ClearScreen()
 {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -126,7 +125,7 @@ void ClearScreen()
 	SetConsoleCursorPosition(stdOutputHandle, homeCoords);
 }
 
-
+// set the output console window size, buffer size and font
 void initConsole()
 {
 	stdOutputHandle = GetStdHandle(STD_OUTPUT_HANDLE);  // Get Output Handle
@@ -161,7 +160,7 @@ void initConsole()
 	SetConsoleWindowInfo(stdOutputHandle, TRUE, &rectConsoleWindowInfo);  // Set Window Size
 }
 
-
+// print the "current user symbol" turn
 void coutTurn()
 {
 	char color_char_to_print[FIGURE_CHAR_SIZE * 2 + 1];
@@ -179,7 +178,7 @@ void coutTurn()
 	cout << status_to_print << columns_abcdefgh << endl << "                \r" << color_char_to_print << "'s turn: ";
 }
 
-
+// print the current situation on the board
 void printChessBoard()
 {
 	FigureType figure;
@@ -214,14 +213,14 @@ void printChessBoard()
 	coutTurn();
 }
 
-
+// beep and pring the board
 void beepNReloadTheScreen()
 {
 	cout << "\a";
 	printChessBoard();
 }
 
-
+// replace "containers" of two squares
 bool makeMoveByChessBoardSquares(ChessBoardSquare* from_square, ChessBoardSquare* to_square)
 {
 	to_square->figure_color = from_square->figure_color;
@@ -232,7 +231,7 @@ bool makeMoveByChessBoardSquares(ChessBoardSquare* from_square, ChessBoardSquare
 	return true;
 }
 
-
+// try to move the king by specifying the coordinates
 bool makeKingsMove(int from_x, int from_y, int to_x, int to_y)
 {
 	bool move_successfull = false;
@@ -251,7 +250,7 @@ bool makeKingsMove(int from_x, int from_y, int to_x, int to_y)
 	return move_successfull;
 }
 
-
+// try to move the queen by specifying the coordinates
 bool makeQueensMove(int from_x, int from_y, int to_x, int to_y)
 {
 	bool invalid_move = false;
@@ -301,7 +300,7 @@ bool makeQueensMove(int from_x, int from_y, int to_x, int to_y)
 	return move_successfull;
 }
 
-
+// try to move the bishop by specifying the coordinates
 bool makeBishopsMove(int from_x, int from_y, int to_x, int to_y)
 {
 	bool invalid_move = false;
@@ -327,7 +326,7 @@ bool makeBishopsMove(int from_x, int from_y, int to_x, int to_y)
 	return move_successfull;
 }
 
-
+// try to move the rook by specifying the coordinates
 bool makeRooksMove(int from_x, int from_y, int to_x, int to_y)
 {
 	bool invalid_move = false;
@@ -366,7 +365,7 @@ bool makeRooksMove(int from_x, int from_y, int to_x, int to_y)
 	return move_successfull;
 }
 
-
+// try to move the knight by specifying the coordinates
 bool makeKnightsMove(int from_x, int from_y, int to_x, int to_y)
 {
 	ChessBoardSquare* from_square = &chessboard_squares[from_x][from_y];
@@ -380,7 +379,7 @@ bool makeKnightsMove(int from_x, int from_y, int to_x, int to_y)
 
 }
 
-
+// try to move the pawn by specifying the coordinates
 bool makePawnsMove(int from_x, int from_y, int to_x, int to_y)
 {
 	ChessBoardSquare* from_square = &chessboard_squares[from_x][from_y];
@@ -400,7 +399,7 @@ bool makePawnsMove(int from_x, int from_y, int to_x, int to_y)
 	return move_successfull;
 }
 
-
+// try to move the king by specifying the coordinates
 bool makeMoveByCoordinates(int from_x, int from_y, int to_x, int to_y)
 {
 	ChessBoardSquare* from_square = &chessboard_squares[from_x][from_y];
@@ -416,6 +415,7 @@ bool makeMoveByCoordinates(int from_x, int from_y, int to_x, int to_y)
 
 	bool to_return = false;
 
+	// find which figure will need to move
 	switch (from_square->figure_type)
 	{
 	case KING:
@@ -456,8 +456,7 @@ bool makeMoveByCoordinates(int from_x, int from_y, int to_x, int to_y)
 
 }
 
-
-//checking is the move possible by duplicating squares array, and return array in original state after checking
+// checking is the move possible by duplicating squares array, and return array in original state after checking
 bool checkOnePossibleMove(int x1, int y1, int x2, int y2)
 {
 	ChessBoardSquare temp_chessboard_squares[8][8];
@@ -468,7 +467,7 @@ bool checkOnePossibleMove(int x1, int y1, int x2, int y2)
 	return possible_move;
 }
 
-
+// function that save the game (chessboard array first, then specific booleans)
 void saveTheGame(string strfilename)
 {
 	const char* filename = strfilename.c_str();
@@ -491,7 +490,7 @@ void saveTheGame(string strfilename)
 	beepNReloadTheScreen();
 }
 
-
+// function that load the game (chessboard array first, then specific booleans)
 void loadTheGame(string strfilename)
 {
 	const char* filename = strfilename.c_str();
@@ -571,7 +570,7 @@ void loadTheGame(string strfilename)
 	beepNReloadTheScreen();
 }
 
-
+// append the strign to the log
 void appendTheLog(string log_game_path, string key_sequence)
 {
 	ofstream myfile;
@@ -582,11 +581,10 @@ void appendTheLog(string log_game_path, string key_sequence)
 	myfile.close();
 }
 
-
+// count all possible next moves
 int countAllPossibleMoves()
 {
 	int no_of_moves = 0;
-	checkChess(color_to_play);
 	for (int x1 = 0; x1 < 8; x1++)
 		for (int y1 = 0; y1 < 8; y1++)
 			for (int x2 = 0; x2 < 8; x2++)
@@ -597,7 +595,7 @@ int countAllPossibleMoves()
 	return no_of_moves;
 }
 
-
+// check (and log) all possible next moves
 void checkAllPossibleMoves(string log_game_path = "")
 {
 	string no_of_moves = to_string(countAllPossibleMoves());
@@ -615,8 +613,8 @@ void checkAllPossibleMoves(string log_game_path = "")
 					}
 }
 
-
-void checkChess(FigureColor color)
+// check is the color specified in check
+void checkCheck(FigureColor color)
 {
 	white_in_check = false;
 	black_in_check = false;
@@ -645,7 +643,7 @@ void checkChess(FigureColor color)
 	switchColorToPlay();
 }
 
-
+// display the info screen
 void infoScreen()
 {
 	const char* bottom_neutral_symbol = "◯";
@@ -674,7 +672,25 @@ void infoScreen()
 	beepNReloadTheScreen();
 }
 
+// display the intro screen
+void introScreen()
+{
+	COORD randomCoords;
+	do
+	{
+		SetConsoleCursorPosition(stdOutputHandle, homeCoords);
+		cout << endl << "･･･Yet･･Another･･･" << endl << endl << "･･2･PLAYER･CHESS･･" << endl << endl << "･･F6-･quick･save･･" << endl << "･･F7-･quick･load･･" << endl << "･･･I-･info screen･" << endl << endl << "･･press･･any･key･･";
+		//Beep(rand() % 500 + 500, rand() % 750);
+		randomCoords = { (rand() % 9) * 2, rand() % 10 };
+		SetConsoleCursorPosition(stdOutputHandle, randomCoords);
+		cout << "☺";
+		randomCoords = { (rand() % 9) * 2, rand() % 10 };
+		SetConsoleCursorPosition(stdOutputHandle, randomCoords);
+		cout << "☻";
+	} while (!_kbhit());
+}
 
+// function for playing one move
 bool playOneMove(string save_game_path, string log_game_path)
 {
 	int from_x, to_x, from_y, to_y;
@@ -683,7 +699,7 @@ bool playOneMove(string save_game_path, string log_game_path)
 	int get_key; // integer to store ascii code of the key pressed
 	char key_pressed; // char to store char pressed
 	string key_sequence; // string to store the current key sequence
-	cout << "✓";  // miracle fix blinking cursor
+	cout << "✓";  // fix blinking cursor
 
 	printChessBoard();
 
@@ -725,6 +741,7 @@ bool playOneMove(string save_game_path, string log_game_path)
 					key_sequence = "";
 				}
 
+				// "i" or "I"
 				if (get_key == 73 || get_key == 105)
 					infoScreen();
 			}
@@ -760,26 +777,26 @@ bool playOneMove(string save_game_path, string log_game_path)
 					bool still_in_check = false;
 					if ((color_to_play == WHITE) && (white_in_check))
 					{
-						checkChess(WHITE);
+						checkCheck(WHITE);
 						if (white_in_check)
 							still_in_check = true;
 					}
 					if ((color_to_play == BLACK) && (black_in_check))
 					{
-						checkChess(BLACK);
+						checkCheck(BLACK);
 						if (black_in_check)
 							still_in_check = true;
 					}
 					if (!still_in_check)
 					{
-						// the move is good
+						// if the move is good
 						appendTheLog(log_game_path, key_sequence);
 						current_move_finished = true;
 						switchColorToPlay();
 					}
 					else
 					{
-						// return the position before the move
+						// return to the position before the move
 						cout << "\a";
 						from_current_square->figure_type = from_type;
 						from_current_square->figure_color = from_color;
@@ -800,7 +817,7 @@ bool playOneMove(string save_game_path, string log_game_path)
 
 	} while (!current_move_finished);
 
-	checkChess(color_to_play);
+	checkCheck(color_to_play);
 
 	if (white_in_check || black_in_check)
 		cout << "\a";
@@ -814,25 +831,7 @@ bool playOneMove(string save_game_path, string log_game_path)
 
 }
 
-
-void introScreen()
-{
-	COORD randomCoords;
-	do
-	{
-		SetConsoleCursorPosition(stdOutputHandle, homeCoords);
-		cout << endl << "･･･Yet･･Another･･･" << endl << endl << "･･2･PLAYER･CHESS･･" << endl << endl << "･･F6-･quick･save･･" << endl << "･･F7-･quick･load･･" << endl << "･･･I-･info screen･" << endl << endl << "･･press･･any･key･･";
-		Beep(rand() % 500 + 500, rand() % 750);
-		randomCoords = { (rand() % 9) * 2, rand() % 10 };
-		SetConsoleCursorPosition(stdOutputHandle, randomCoords);
-		cout << "☺";
-		randomCoords = { (rand() % 9) * 2, rand() % 10 };
-		SetConsoleCursorPosition(stdOutputHandle, randomCoords);
-		cout << "☻";
-	} while (!_kbhit());
-}
-
-
+// main loop function
 void playChess()
 {
 	string current_dir;
@@ -846,7 +845,6 @@ void playChess()
 
 	int get_key;
 	char newgame = 'Y';
-	//int do_nothing;
 
 	current_dir = ExePath();
 	save_game_dir = pathAppend(current_dir, "SaveGames");
@@ -879,10 +877,10 @@ void playChess()
 	{
 		while (playOneMove(save_game_path, log_game_path))
 		{
-
+			
 		}
 
-		cout << "New game?" << endl << "(y)es / (n)o: ";
+		cout << "New game?" << endl << "(y)es " <<endl <<"/ (n)o: ";
 		get_key = _getch();
 
 		if (char(toupper(get_key)) != 'Y')
@@ -891,7 +889,7 @@ void playChess()
 	} while (newgame == 'Y');
 }
 
-
+// main function
 int main()
 {
 	playChess();
