@@ -643,7 +643,7 @@ void checkCheck(FigureColor color)
 	switchColorToPlay();
 }
 
-// display the info screen
+// print the info screen
 void infoScreen()
 {
 	const char* bottom_neutral_symbol = "◯";
@@ -672,7 +672,7 @@ void infoScreen()
 	beepNReloadTheScreen();
 }
 
-// display the intro screen
+// print the intro screen
 void introScreen()
 {
 	COORD randomCoords;
@@ -680,14 +680,14 @@ void introScreen()
 	{
 		SetConsoleCursorPosition(stdOutputHandle, homeCoords);
 		cout << endl << "･･･Yet･･Another･･･" << endl << endl << "･･2･PLAYER･CHESS･･" << endl << endl << "･･F6-･quick･save･･" << endl << "･･F7-･quick･load･･" << endl << "･･･I-･info screen･" << endl << endl << "･･press･･any･key･･";
-		//Beep(rand() % 500 + 500, rand() % 750);
+		Beep(rand() % 500 + 500, rand() % 750);
 		randomCoords = { (rand() % 9) * 2, rand() % 10 };
 		SetConsoleCursorPosition(stdOutputHandle, randomCoords);
 		cout << "☺";
 		randomCoords = { (rand() % 9) * 2, rand() % 10 };
 		SetConsoleCursorPosition(stdOutputHandle, randomCoords);
 		cout << "☻";
-	} while (!_kbhit());
+	} while (!_kbhit()); // wait for the "any key" is pressed
 }
 
 // function for playing one move
@@ -709,32 +709,35 @@ bool playOneMove(string save_game_path, string log_game_path)
 
 		do
 		{
-			get_key = _getch(); //  take the ascii of the pressed key
+			//  take the ascii of the pressed key
+			get_key = _getch(); 
 
-			if (get_key == 0 || get_key == 0xe0) //  for longer ascii key, read the second key
+			//  for longer ascii key, read the second key
+			if (get_key == 0 || get_key == 0xe0) 
 			{
 				get_key = _getch();
 
-				// F6
+				// if F6 is pressed
 				if (get_key == 64)
 					saveTheGame(save_game_path);
 
-				// F7
+				// if F7 is pressed
 				if (get_key == 65)
 					loadTheGame(save_game_path);
 			}
 			else
 			{
-				key_pressed = toupper(char(get_key)); // take the char pressed
+				// take the upper char of the char pressed
+				key_pressed = toupper(char(get_key)); 
 
-				// between a-h, A-H, or 1-8
+				// if the pressed is sometwing between a-h, A-H, or 1-8
 				if ((get_key < 58) && (get_key > 47) || (get_key < 73) && (get_key > 64) || (get_key < 105) && (get_key > 96))
 				{
 					cout << key_pressed;
 					key_sequence += key_pressed;
 				}
 
-				// backspace
+				// if the backspace is pressed
 				if (get_key == 8)
 				{
 					beepNReloadTheScreen();
